@@ -1,0 +1,114 @@
+# ==========================================
+# DSA-Based Crypto Trading Bot (Educational)
+# Author: Hamad Haider
+# Purpose: Demonstrate DSA concepts for efficiency
+# ==========================================
+
+from collections import deque
+import heapq
+
+# -------------------------------
+# Queue: Handle real-time prices
+# -------------------------------
+class PriceQueue:
+    def __init__(self, max_size=5):
+        self.prices = deque(maxlen=max_size)
+
+    def add_price(self, price):
+        self.prices.append(price)
+
+    def get_prices(self):
+        return list(self.prices)
+
+
+# ------------------------------------
+# Hash Map: Store coin-related data
+# ------------------------------------
+class CoinStorage:
+    def __init__(self):
+        self.coins = {}
+
+    def add_coin(self, symbol, price, volume):
+        self.coins[symbol] = {
+            "price": price,
+            "volume": volume
+        }
+
+    def get_coin(self, symbol):
+        return self.coins.get(symbol, None)
+
+
+# ------------------------------------
+# Priority Queue (Heap): Best trade
+# ------------------------------------
+class TradeSelector:
+    def __init__(self):
+        self.heap = []
+
+    def add_trade(self, expected_profit, coin):
+        # negative profit for max-heap behavior
+        heapq.heappush(self.heap, (-expected_profit, coin))
+
+    def select_best_trade(self):
+        if not self.heap:
+            return None
+        profit, coin = heapq.heappop(self.heap)
+        return coin, -profit
+
+
+# ------------------------------------
+# Sorting: Rank coins by volume
+# ------------------------------------
+def sort_coins_by_volume(coin_data):
+    return sorted(
+        coin_data.items(),
+        key=lambda x: x[1]["volume"],
+        reverse=True
+    )
+
+
+# ------------------------------------
+# Main Trading Bot Logic
+# ------------------------------------
+def main():
+    print("=== DSA-Based Crypto Trading Bot ===\n")
+
+    # Queue usage
+    price_queue = PriceQueue()
+    price_queue.add_price(42000)
+    price_queue.add_price(42500)
+    price_queue.add_price(43000)
+
+    print("Recent Prices (Queue):", price_queue.get_prices())
+
+    # Hash Map usage
+    storage = CoinStorage()
+    storage.add_coin("BTC", 43000, 1200)
+    storage.add_coin("ETH", 3100, 2000)
+    storage.add_coin("BNB", 410, 900)
+
+    print("\nCoin Data (Hash Map):")
+    for coin, data in storage.coins.items():
+        print(coin, "->", data)
+
+    # Priority Queue usage
+    selector = TradeSelector()
+    selector.add_trade(5.5, "BTC")
+    selector.add_trade(3.2, "ETH")
+    selector.add_trade(4.1, "BNB")
+
+    best_trade = selector.select_best_trade()
+    print("\nBest Trade (Priority Queue):", best_trade)
+
+    # Sorting usage
+    sorted_coins = sort_coins_by_volume(storage.coins)
+    print("\nCoins Sorted by Volume:")
+    for coin, data in sorted_coins:
+        print(coin, "Volume:", data["volume"])
+
+    print("\n=== End of Simulation ===")
+
+
+# Run program
+if __name__ == "__main__":
+    main()
